@@ -6,7 +6,7 @@ int yyerror(char *s);
 
 %}
 
-%token INT_DT STRING_DT IF_INSTR NUM STRING_LIT ID SEMICOLON EQ LCBR RCBR LBR RBR TRUE_LIT FALSE_LIT WHILE_INSTR EQ_OP
+%token INT_DT STRING_DT IF_INSTR NUM STRING_LIT ID SEMICOLON EQ LCBR RCBR LBR RBR TRUE_LIT FALSE_LIT WHILE_INSTR EQ_OP AND_OP
 
 
 %type <id> ID
@@ -33,16 +33,21 @@ prog:
 boolean:
     TRUE_LIT   { $$ = 1; } 
     | FALSE_LIT  { $$ = 0; }  
-    | expression  { $$ = $1; }
+    // | expression  { $$ = $1; }
 
 ;
 
 expression:
       NUM                       { $$ = $1; }
+    | boolean                   { $$ = $1; }
     | expression EQ_OP expression
       {
         $$ = $1 == $3;
       }
+    | expression AND_OP expression
+    {
+        $$ = $1 && $3;
+    }
     ;
 
 stmts:
@@ -50,6 +55,11 @@ stmts:
     ;
 
 stmt:
+    SEMICOLON { 
+        printf("SEMICOLON -> END OF INPUT");
+        YYACCEPT;
+    }
+    |
     expression
     {
         printf("E%d\n", $1);
@@ -65,7 +75,7 @@ stmt:
         printf("STRING_DT %s EQ %s\n", $2, $4);
     }
     |
-    IF_INSTR LCBR boolean RCBR LBR stmts RBR
+    IF_INSTR LCBR expression RCBR LBR stmts RBR
     {
         if ($3) {
             printf("IF_INSTR executed\n");
@@ -74,10 +84,14 @@ stmt:
         }
     }
     |
-    WHILE_INSTR LCBR boolean RCBR LBR stmts RBR
+    WHILE_INSTR LCBR expression RCBR LBR stmts RBR
     {
         if ($3) {
             printf("WHILE_INSTR executed\n");
+        }
+        else { 
+            printf("WHILE_INSTR skipped\n");
+
         }
     }
 ;
@@ -89,8 +103,19 @@ int yyerror(char *s){
 	return 0;
 }
 
-int main()
-{
+int main(int argc, char **argv) {
+    if (argc < 2) {
+        perror("ERROR - no file given");
+        return 0;
+    }
+
+    FILE *file = fopen(argv[1], "r");
+    if (!file) {
+        perror("ERROR - file not found");
+        return 0;
+    }
+
+    stdin = file;
     yyparse();
     return 0;
 }

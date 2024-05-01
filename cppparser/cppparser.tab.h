@@ -69,7 +69,8 @@ extern int yydebug;
     TRUE_LIT = 270,                /* TRUE_LIT  */
     FALSE_LIT = 271,               /* FALSE_LIT  */
     WHILE_INSTR = 272,             /* WHILE_INSTR  */
-    EQ_OP = 273                    /* EQ_OP  */
+    EQ_OP = 273,                   /* EQ_OP  */
+    AND_OP = 274                   /* AND_OP  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -85,7 +86,7 @@ union YYSTYPE
     int bool_val; 
 
 
-#line 89 "cppparser.tab.h"
+#line 90 "cppparser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

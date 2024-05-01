@@ -18,6 +18,8 @@ string_literal      (\"[^"]*\")
 "if"                {return IF_INSTR;}
 "while"             {return WHILE_INSTR;}
 
+"&&"                {return AND_OP;}      
+
 
 "("                 {return LCBR;}
 ")"                 {return RCBR;}
